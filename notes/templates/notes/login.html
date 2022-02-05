@@ -1,0 +1,50 @@
+{% extends 'notes/layout.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block body %}
+
+
+<div class="container border p-3 rounded col-4">
+    <h3 class="mt-3 mb-4">Login User</h3>
+    <p id="message" class="text-black"></p>
+    <form method="POST" id="loginForm">
+        {% csrf_token %}
+        {{form|crispy}}
+        <input type="submit" class="btn btn-success m-3" value="Login">
+    </form>
+</div>
+<script src="https://code.jquery.com/jquery-2.2.4.js" integrity="sha256-iT6Q9iMJYuQiMWNd9lDyBUStIq/8PuOW33aOqmvFpqI=" crossorigin="anonymous"></script>
+
+<script>
+    $(document).on('submit','#loginForm',function(e){
+        e.preventDefault();
+        debugger;
+        var username = $('#id_username').val()
+        var password = $('#id_password').val()
+
+        $.ajax({
+            type:'POST',
+            url:'/login/',
+            data:{
+                username:username,
+                password:password,
+                csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+            },
+            success:function(response){
+                console.log(response.status);
+                $('#message').text(response.status)
+                $('#message').addClass('p-2');
+                if(response.status=="User login Successully"){
+                    $('#message').addClass('bg-success');
+                    window.location="{% url 'Home' %}";
+                }
+                else{
+                    $('#message').addClass('bg-danger');
+                    window.location="{% url 'Login' %}";
+                }
+            }
+        });
+    });
+</script>
+
+{% endblock %}
